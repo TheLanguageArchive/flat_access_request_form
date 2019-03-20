@@ -1,0 +1,100 @@
+<?php
+/**
+ * Displaying flat request access form
+ * and sending e-mail
+ *
+ * @return string
+ */
+function flat_access_request_form() {
+
+    $query = new EntityFieldQuery();
+    $entities = $query->entityCondition('entity_type', 'node')
+        ->propertyCondition('type', 'webform')
+        ->propertyCondition('title', 'Request access')
+        ->propertyCondition('status', 1)
+        ->range(0, 1)
+        ->execute();
+
+    $entity = array_keys($entities['node']);
+    $nid    = array_shift($entity);
+    $node   = node_load($nid);
+    $view   = node_view($node);
+
+    return render($view);
+}
+
+/**
+ * Permissions
+ *
+ * @return array
+ */
+function flat_access_request_form_permission() {
+
+    return [
+        'request access menu' => [
+            'title' => t('FLAT Access Request Form'),
+            'description' => t('Allows you to request access to certain objects, bundles or collections'),
+        ],
+    ];
+}
+
+/**
+ * @return array
+ */
+function flat_access_request_form_menu() {
+
+    $items = [];
+
+    // request access form
+    $items['islandora/object/%islandora_object/request_access'] = [
+
+        'title'            => 'Request Access',
+        'type'             => MENU_LOCAL_TASK,
+        'page callback'    => 'flat_access_request_form',
+        'page arguments'   => [2],
+        'access callback'  => 'flat_access_request_form_menu_access',
+        'access arguments' => [2],
+        'weight'           => 100,
+    ];
+
+    $items['admin/config/flat_deposit/flat_access_request_form'] = [
+
+        'title'            => t('Configure FLAT Access Request Form'),
+        'type'             => MENU_LOCAL_TASK,
+        'page callback'    => 'drupal_get_form',
+        'page arguments'   => ['flat_access_request_form_admin_form'],
+        'access callback'  => 'flat_access_request_form_menu_access',
+        'file'             => 'includes/FlatAccessRequestFormAdmin.inc',
+    ];
+
+    return $items;
+}
+
+/**
+ * When to allow showing of tab
+ *
+ * @param AbstractObject $object
+ *
+ * @return boolean
+ */
+function flat_access_request_form_menu_access($object = null) {
+
+    if (null === $object) {
+        return false;
+    }
+
+    global $user;
+
+    module_load_include('inc', 'flat_permissions', 'includes/PermissionsAccess');
+
+    $pid       = trim(str_replace('info:fedora/', '', $object->id));
+    $list      = variable_get('flat_access_request_form_exclusion_list');
+    $list      = explode("\n", $list);
+    $exclusion = [];
+
+    foreach ($list as $item) {
+        $exclusion[] = trim(str_replace('info:fedora/', '', $item));
+    }
+
+    return true === user_access('request access menu') && false === in_array($pid, $exclusion) && true === PermissionsAccess::hasAccess($user, $object, new IslandoraXacml($object));
+}

@@ -1,0 +1,8 @@
+name = FLAT Access Request Form
+description = A FLAT project that allows you to request access to certain objects
+package = FLAT
+core = 7.x
+version = 7.x-0.1-dev
+configure = admin/config/flat_deposit/flat_access_request_form
+dependencies[] = flat_deposit
+dependencies[] = flat_permissions
