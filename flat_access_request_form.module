@@ -69,7 +69,7 @@ function flat_access_request_form_menu() {
     $items['islandora/object/%islandora_object/request_access'] = [
 
         'title'            => 'Request Access',
-        'type'             => MENU_LOCAL_TASK,
+        'type'             => MENU_CALLBACK,
         'page callback'    => 'flat_access_request_form',
         'page arguments'   => [2],
         'access callback'  => 'flat_access_request_form_menu_access',
@@ -121,4 +121,27 @@ function flat_access_request_form_menu_access($object = null) {
     }
 
     return true === user_access('request access menu') && false === in_array($pid, $exclusion) && true === PermissionsAccess::hasAccess($user, $object, new IslandoraXacml($object));
+}
+
+/**
+ * Hook into page preprocess to add
+ * navigation links to title suffix
+ *
+ * @param array $variables
+ *
+ * @return void
+ */
+function flat_access_request_form_preprocess_page(&$variables) {
+
+    // arg(3) === null means we are on the view page
+    if (arg(0) === 'islandora' && arg(3) === null) {
+
+        if (!isset($variables['title_suffix']['#markup'])) {
+            $variables['title_suffix']['#markup'] = '';
+        }
+
+        $request_access_path = url('islandora/object/' . arg(2) . '/request_access');
+
+        $variables['title_suffix']['#markup'] = '<div style="margin-bottom: 10px;"><a href="' . $request_access_path . '">Request access</a></div>' . $variables['title_suffix']['#markup'];
+    }
 }
