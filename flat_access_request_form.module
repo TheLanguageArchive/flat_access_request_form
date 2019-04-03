@@ -7,20 +7,42 @@
  */
 function flat_access_request_form() {
 
-    $query = new EntityFieldQuery();
+    $query    = new EntityFieldQuery();
     $entities = $query->entityCondition('entity_type', 'node')
         ->propertyCondition('type', 'webform')
-        ->propertyCondition('title', 'Request access')
+        ->propertyCondition('title', variable_get('flat_access_request_form_form_title'))
         ->propertyCondition('status', 1)
         ->range(0, 1)
         ->execute();
 
-    $entity = array_keys($entities['node']);
-    $nid    = array_shift($entity);
-    $node   = node_load($nid);
-    $view   = node_view($node);
+    if ($entities) {
 
-    return render($view);
+        $entity   = array_keys($entities['node']);
+        $nid      = array_shift($entity);
+        $node     = node_load($nid);
+        $view     = node_view($node);
+        $response = render($view);
+
+    } else {
+        $response = theme('flat_access_request_form_not_found_template');
+    }
+
+    return $response;
+}
+
+/**
+ * Theme
+ *
+ * @return array
+ */
+function flat_access_request_form_theme() {
+
+    return [
+
+        'flat_access_request_form_not_found_template' => [
+            'template' => 'theme/flat-access-request-form-not-found',
+        ],
+    ];
 }
 
 /**
