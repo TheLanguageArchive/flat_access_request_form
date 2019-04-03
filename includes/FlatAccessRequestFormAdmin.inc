@@ -13,20 +13,22 @@ function flat_access_request_form_admin_form($form, &$form_state) {
 
         'general' => [
 
-            '#type'      => 'fieldset',
-            '#title'     => t('General'),
-            'form_title' => [
+            '#type'  => 'fieldset',
+            '#title' => t('General'),
+            'title'  => [
 
                 '#type'          => 'textfield',
-                '#title'         => 'Request Access Form title',
+                '#title'         => 'Title',
+                '#help_text'     => 'Fill in form title that needs to be displayed when requesting access',
                 '#size'          => 30,
-                '#default_value' => variable_get('flat_access_request_form_form_title'),
+                '#default_value' => variable_get('flat_access_request_form_title'),
             ],
 
             'exclusion_list' => [
 
                 '#type'          => 'textarea',
                 '#title'         => 'Exclusion list',
+                '#help_text'     => 'Please fill in a list of Fedora PID, separated by line delimeter',
                 '#size'          => 30,
                 '#default_value' => variable_get('flat_access_request_form_exclusion_list'),
             ],
@@ -68,16 +70,17 @@ function flat_access_request_form_admin_form_submit($form, &$form_state) {
 
     if ($form_state['triggering_element']['#value'] == t('Reset to defaults')) {
 
-        variable_set('flat_access_request_form_form_title', '');
+        variable_set('flat_access_request_form_title', t('Flat Access Request Form'));
         variable_set('flat_access_request_form_exclusion_list', '');
 
         $form_state['redirect'] = 'admin/config/flat_deposit/flat_access_request_form';
-        drupal_set_message(t('FLAT request access admin configuration was successfully reset to defaults'));
+        drupal_set_message(t('FLAT access request form admin configuration was successfully reset to defaults'));
 
     } else {
 
-        variable_set('flat_access_request_form_form_title', $form_state['values']['form_title']);
+        variable_set('flat_access_request_form_title', $form_state['values']['title']);
         variable_set('flat_access_request_form_exclusion_list', $form_state['values']['exclusion_list']);
+
         drupal_set_message(t('FLAT request access admin configuration was successfully saved'));
     }
 }

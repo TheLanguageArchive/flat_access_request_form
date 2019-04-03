@@ -1,4 +1,6 @@
 <?php
+module_load_include('inc', 'flat_access_request_form', 'includes/db');
+
 /**
  * Displaying flat request access form
  * and sending e-mail
@@ -7,24 +9,20 @@
  */
 function flat_access_request_form() {
 
-    $query    = new EntityFieldQuery();
-    $entities = $query->entityCondition('entity_type', 'node')
-        ->propertyCondition('type', 'webform')
-        ->propertyCondition('title', variable_get('flat_access_request_form_form_title'))
-        ->propertyCondition('status', 1)
-        ->range(0, 1)
-        ->execute();
+    $entities = flat_access_request_form_entity();
+    $response = theme('flat_access_request_form_not_found_template');
 
     if ($entities) {
 
-        $entity   = array_keys($entities['node']);
-        $nid      = array_shift($entity);
-        $node     = node_load($nid);
+        $entity = array_keys($entities['node']);
+        $nid    = array_shift($entity);
+
+        // hiding title
+        $node = node_load($nid);
+        $node->title = null;
+
         $view     = node_view($node);
         $response = render($view);
-
-    } else {
-        $response = theme('flat_access_request_form_not_found_template');
     }
 
     return $response;

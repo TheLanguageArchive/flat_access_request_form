@@ -1,0 +1,124 @@
+<?php
+module_load_include('inc', 'flat_access_request_form', 'includes/db');
+
+/**
+ * Installation script
+ *
+ * @return void
+ */
+function flat_access_request_form_install() {
+
+    // setting default settings
+    variable_set('flat_access_request_form_title', t('Flat Access Request Form'));
+    variable_set('flat_access_request_form_email', 'admin@example.com');
+    variable_set('flat_access_request_form_exclusion_list', 'islandora:root');
+
+    $node = new stdClass();
+    $node->type = 'webform';
+
+    node_object_prepare($node);
+
+    $node->title    = variable_get('flat_access_request_form_title');
+    $node->language = 'en';
+    $node->uid      = 1;
+    $node->promote  = 0;
+    $node->comment  = 0;
+
+    $components = [
+
+        [
+            'name'      => 'Name',
+            'form_key'  => 'name',
+            'type'      => 'textfield',
+            'value'     => '[current-user:name]',
+            'required'  => 1,
+            'weight'    => 0,
+            'pid'       => 0,
+        ],
+
+        [
+            'name'      => 'E-mail',
+            'form_key'  => 'e_mail',
+            'type'      => 'email',
+            'value'     => '[current-user:mail]',
+            'required'  => 1,
+            'weight'    => 1,
+            'pid'       => 0,
+        ],
+
+        [
+            'name'      => 'Description',
+            'form_key'  => 'description',
+            'type'      => 'textarea',
+            'required'  => 1,
+            'weight'    => 2,
+            'pid'       => 0,
+        ],
+
+        [
+            'name'      => 'Fedora PID',
+            'form_key'  => 'fedora_pid',
+            'type'      => 'hidden',
+            'weight'    => 3,
+            'value'     => '[current-page:arg:2]',
+            'pid'       => 0,
+        ],
+    ];
+
+    $notification = [
+
+        [
+            'email'               => variable_get('flat_access_request_form_email'),
+            'subject'             => 'New request for access',
+            'from_name'           => 'default',
+            'from_address'        => 'default',
+            'template'            => 'default',
+            'excluded_components' => [],
+        ],
+    ];
+
+    $node->webform = [
+
+        'confirmation' => 'Thank you for requesting access for this object. We will be in touch with you shortly.',
+        'confirmation_format' => null,
+        'redirect_url' => '<none>',
+        'status' => '1',
+        'block' => '0',
+        'teaser' => '0',
+        'allow_draft' => '0',
+        'auto_save' => '0',
+        'submit_notice' => '0',
+        'submit_text' => '',
+        'submit_limit' => '-1',
+        'submit_interval' => '-1',
+        'total_submit_limit' => '-1',
+        'progressbar_bar' => '0',
+        'record_exists' => true,
+        'emails' => $notification,
+        'components' => $components,
+        'roles' => [
+            '2',
+        ],
+    ];
+
+    // save node
+    node_save($node);
+}
+
+/**
+ * Removing request form
+ *
+ * @return void
+ */
+function flat_access_request_form_uninstall() {
+
+    $entities = flat_access_request_form_entity();
+
+    if ($entities) {
+
+        $entity = array_keys($entities['node']);
+        $nid    = array_shift($entity);
+
+        node_delete($nid);
+    }
+}
