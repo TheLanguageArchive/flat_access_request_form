@@ -63,11 +63,15 @@ function flat_access_request_form_menu() {
         'type'             => MENU_LOCAL_TASK,
         'page callback'    => 'drupal_get_form',
         'page arguments'   => ['flat_access_request_form_admin_form'],
-        'access callback'  => 'flat_access_request_form_menu_access',
+        'access callback'  => 'flat_access_request_form_admin_menu_access',
         'file'             => 'includes/FlatAccessRequestFormAdmin.inc',
     ];
 
     return $items;
+}
+
+function flat_access_request_form_admin_menu_access() {
+    return true === user_access('request access menu');
 }
 
 /**
