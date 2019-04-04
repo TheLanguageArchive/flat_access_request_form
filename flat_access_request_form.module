@@ -84,7 +84,7 @@ function flat_access_request_form_menu() {
         'page callback'    => 'drupal_get_form',
         'page arguments'   => ['flat_access_request_form_admin_form'],
         'access callback'  => 'flat_access_request_form_admin_menu_access',
-        'file'             => 'includes/FlatAccessRequestFormAdmin.inc',
+        'file'             => 'includes/admin.inc',
     ];
 
     return $items;
@@ -101,26 +101,48 @@ function flat_access_request_form_admin_menu_access() {
  *
  * @return boolean
  */
-function flat_access_request_form_menu_access($object = null) {
+function flat_access_request_form_menu_access() {
+    return true;
+}
 
-    if (null === $object) {
-        return false;
+function flat_access_request_form_token_info() {
+
+    return [
+
+        'types' => [
+            'flat' => [
+                'name' => t('FLAT'),
+                'description' => t('FLAT custom tokens'),
+            ],
+        ],
+        'tokens' => [
+            'flat' => [
+                'url' => [
+                    'name' => t('FLAT url'),
+                    'description' => t('FLAT url generation of Fedora Object'),
+                    'type' => 'fedora',
+                ],
+            ],
+        ],
+    ];
+}
+
+function flat_access_request_form_tokens($type, $tokens, array $data = [], array $options = []) {
+
+    $replacements = [];
+
+    if ($type === 'flat') {
+
+        $object = $data['fedora'];
+        foreach ($tokens as $name => $original) {
+
+            if ($name === 'url') {
+                $replacements[$original] = url('islandora/object/' . $object->id);
+            }
+        }
+
+        return $replacements;
     }
-
-    global $user;
-
-    module_load_include('inc', 'flat_permissions', 'includes/PermissionsAccess');
-
-    $pid       = trim(str_replace('info:fedora/', '', $object->id));
-    $list      = variable_get('flat_access_request_form_exclusion_list');
-    $list      = explode("\n", $list);
-    $exclusion = [];
-
-    foreach ($list as $item) {
-        $exclusion[] = trim(str_replace('info:fedora/', '', $item));
-    }
-
-    return true === user_access('request access menu') && false === in_array($pid, $exclusion) && true === PermissionsAccess::hasAccess($user, $object, new IslandoraXacml($object));
 }
 
 /**
@@ -133,15 +155,24 @@ function flat_access_request_form_menu_access($object = null) {
  */
 function flat_access_request_form_preprocess_page(&$variables) {
 
-    // arg(3) === null means we are on the view page
-    if (arg(0) === 'islandora' && arg(3) === null) {
+    if (drupal_get_http_header('status') !== '403 Forbidden') {
 
-        if (!isset($variables['title_suffix']['#markup'])) {
-            $variables['title_suffix']['#markup'] = '';
+        // arg(3) === null means we are on the view page
+        if (arg(0) === 'islandora' && arg(3) === null) {
+
+            $object    = menu_get_object('islandora_object', 2);
+            $no_access = flat_access_request_has_no_access($object);
+
+            if (true === $no_access) {
+
+                if (!isset($variables['title_suffix']['#markup'])) {
+                    $variables['title_suffix']['#markup'] = '';
+                }
+
+                $request_access_path = url('islandora/object/' . arg(2) . '/request_access');
+
+                $variables['title_suffix']['#markup'] = '<div style="margin-bottom: 10px;"><a href="' . $request_access_path . '">Request access</a></div>' . $variables['title_suffix']['#markup'];
+            }
         }
-
-        $request_access_path = url('islandora/object/' . arg(2) . '/request_access');
-
-        $variables['title_suffix']['#markup'] = '<div style="margin-bottom: 10px;"><a href="' . $request_access_path . '">Request access</a></div>' . $variables['title_suffix']['#markup'];
     }
 }
