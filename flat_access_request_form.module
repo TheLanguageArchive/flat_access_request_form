@@ -117,10 +117,13 @@ function flat_access_request_form_token_info() {
         ],
         'tokens' => [
             'flat' => [
+                'id' => [
+                    'name' => t('FLAT fedora id'),
+                    'description' => t('FLAT Fedora Object ID'),
+                ],
                 'url' => [
-                    'name' => t('FLAT url'),
+                    'name' => t('FLAT fedora url'),
                     'description' => t('FLAT url generation of Fedora Object'),
-                    'type' => 'fedora',
                 ],
             ],
         ],
@@ -133,8 +136,12 @@ function flat_access_request_form_tokens($type, $tokens, array $data = [], array
 
     if ($type === 'flat') {
 
-        $object = $data['fedora'];
+        $object = menu_get_object('islandora_object', 2);
         foreach ($tokens as $name => $original) {
+
+            if ($name === 'id') {
+                $replacements[$original] = $object->id;
+            }
 
             if ($name === 'url') {
                 $replacements[$original] = url('islandora/object/' . $object->id);
