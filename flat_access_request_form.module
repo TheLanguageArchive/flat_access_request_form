@@ -141,18 +141,22 @@ function flat_access_request_form_tokens($type, $tokens, array $data = [], array
     if ($type === 'flat') {
 
         $object = menu_get_object('islandora_object', 2);
-        foreach ($tokens as $name => $original) {
 
-            if ($name === 'id') {
-                $replacements[$original] = $object->id;
-            }
+        if ($object) {
 
-            if ($name === 'url') {
-                $replacements[$original] = url('islandora/object/' . $object->id, ['absolute' => true]);
-            }
+            foreach ($tokens as $name => $original) {
 
-            if ($name === 'label') {
-                $replacements[$original] = $object->label;
+                if ($name === 'id') {
+                    $replacements[$original] = $object->id;
+                }
+
+                if ($name === 'url') {
+                    $replacements[$original] = url('islandora/object/' . $object->id, ['absolute' => true]);
+                }
+
+                if ($name === 'label') {
+                    $replacements[$original] = $object->label;
+                }
             }
         }
 

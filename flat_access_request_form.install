@@ -78,10 +78,10 @@ function flat_access_request_form_install() {
 
         [
             'email'               => variable_get('flat_access_request_form_email'),
-            'subject'             => 'New request for access',
+            'subject'             => 'Access request for [flat:label]',
             'from_name'           => 'default',
             'from_address'        => 'default',
-            'template'            => "Submitted on [submission:date:long] <br />\nSubmitted by user: [submission:user] <br />\nSubmitted for fedora object: <a href=\"[flat:url]\">[flat:label]</a> <br />\nSubmitted values are:<br />\n[submission:values] <br />\n<br />\nThe results of this submission may be viewed at: <br />\n[submission:url]",
+            'template'            => "User Name: [submission:user:field_full_name]\nUser Email address: [submission:user:mail]\nRequested Node: [flat:label]\nURL: [flat:url]\nSubmission: [submission:url]\nDescription: \n[submission:values:description]\n",
             'html'                => '1',
             'excluded_components' => [],
         ],
