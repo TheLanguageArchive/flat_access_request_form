@@ -144,7 +144,7 @@ function flat_access_request_form_tokens($type, $tokens, array $data = [], array
             }
 
             if ($name === 'url') {
-                $replacements[$original] = url('islandora/object/' . $object->id);
+                $replacements[$original] = url('islandora/object/' . $object->id, ['absolute' => true]);
             }
         }
 

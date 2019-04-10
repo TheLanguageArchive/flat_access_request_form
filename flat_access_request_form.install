@@ -60,7 +60,16 @@ function flat_access_request_form_install() {
             'form_key'  => 'fedora_pid',
             'type'      => 'hidden',
             'weight'    => 3,
-            'value'     => '[current-page:arg:2]',
+            'value'     => '[flat:id]',
+            'pid'       => 0,
+        ],
+
+        [
+            'name'      => 'Fedora URL',
+            'form_key'  => 'fedora_url',
+            'type'      => 'hidden',
+            'weight'    => 3,
+            'value'     => '[flat:url]',
             'pid'       => 0,
         ],
     ];
