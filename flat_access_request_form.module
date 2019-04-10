@@ -125,6 +125,10 @@ function flat_access_request_form_token_info() {
                     'name' => t('FLAT fedora url'),
                     'description' => t('FLAT url generation of Fedora Object'),
                 ],
+                'label' => [
+                    'name' => t('FLAT fedora label'),
+                    'description' => t('FLAT label generation of Fedora Object'),
+                ],
             ],
         ],
     ];
@@ -145,6 +149,10 @@ function flat_access_request_form_tokens($type, $tokens, array $data = [], array
 
             if ($name === 'url') {
                 $replacements[$original] = url('islandora/object/' . $object->id, ['absolute' => true]);
+            }
+
+            if ($name === 'label') {
+                $replacements[$original] = $object->label;
             }
         }
 

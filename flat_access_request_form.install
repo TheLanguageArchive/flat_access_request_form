@@ -81,7 +81,8 @@ function flat_access_request_form_install() {
             'subject'             => 'New request for access',
             'from_name'           => 'default',
             'from_address'        => 'default',
-            'template'            => 'default',
+            'template'            => "Submitted on [submission:date:long] <br />\nSubmitted by user: [submission:user] <br />\nSubmitted for fedora object: <a href=\"[flat:url]\">[flat:label]</a> <br />\nSubmitted values are:<br />\n[submission:values] <br />\n<br />\nThe results of this submission may be viewed at: <br />\n[submission:url]",
+            'html'                => '1',
             'excluded_components' => [],
         ],
     ];
