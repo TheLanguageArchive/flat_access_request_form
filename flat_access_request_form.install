@@ -81,7 +81,7 @@ function flat_access_request_form_install() {
             'subject'             => 'Access request for [flat:label]',
             'from_name'           => 'default',
             'from_address'        => 'default',
-            'template'            => "User Name: [submission:user:field_full_name]\nUser Email address: [submission:user:mail]\nRequested Node: [flat:label]\nURL: [flat:url]\nSubmission: [submission:url]\nDescription: \n[submission:values:description]\n",
+            'template'            => "User Name: [submission:user:field_full_name]\nUser Email address: [submission:user:mail]\nRequested Node: [flat:label]\nURL: [flat:url]\nDescription: \n[submission:values:description]\n",
             'html'                => '1',
             'excluded_components' => [],
         ],
