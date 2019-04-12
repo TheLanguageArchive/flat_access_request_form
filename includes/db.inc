@@ -27,7 +27,6 @@ function flat_access_request_form_entity() {
  */
 function flat_access_request_has_no_access($object = null) {
 
-    return true;
     if (null === $object) {
         return false;
     }
