@@ -44,5 +44,5 @@ function flat_access_request_has_no_access($object = null) {
         $exclusion[] = trim(str_replace('info:fedora/', '', $item));
     }
 
-    return true === user_access('request access menu') && false === in_array($pid, $exclusion) && false === PermissionsAccess::hasAccess($user, $object, new IslandoraXacml($object));
+    return false === in_array($pid, $exclusion) && false === PermissionsAccess::hasAccess($user, $object, new IslandoraXacml($object));
 }
