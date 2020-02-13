@@ -9,19 +9,26 @@
  */
 function flat_access_request_form_admin_form($form, &$form_state) {
 
+    $webforms = flat_access_request_form_get_webforms();
+    $options  = [];
+
+    foreach ($webforms as $webform) {
+        $options[$webform->nid] = $webform->title;
+    }
+
     $form = [
 
         'general' => [
 
-            '#type'  => 'fieldset',
-            '#title' => t('General'),
-            'title'  => [
+            '#type'   => 'fieldset',
+            '#title'  => t('General'),
+            'webform' => [
 
-                '#type'          => 'textfield',
-                '#title'         => 'Title',
-                '#help_text'     => 'Fill in form title that needs to be displayed when requesting access',
-                '#size'          => 30,
-                '#default_value' => variable_get('flat_access_request_form_title'),
+                '#type'          => 'select',
+                '#title'         => t('FLAT Access Request Webform'),
+                '#default_value' => variable_get('flat_access_request_form_id', null),
+                '#help_text'     => 'Which webform should be selected as the access request form',
+                '#options'       => $options,
             ],
 
             'exclusion_list' => [
@@ -70,7 +77,7 @@ function flat_access_request_form_admin_form_submit($form, &$form_state) {
 
     if ($form_state['triggering_element']['#value'] == t('Reset to defaults')) {
 
-        variable_set('flat_access_request_form_title', t('Flat Access Request Form'));
+        variable_set('flat_access_request_form_id', null);
         variable_set('flat_access_request_form_exclusion_list', '');
 
         $form_state['redirect'] = 'admin/config/flat_deposit/flat_access_request_form';
@@ -78,7 +85,7 @@ function flat_access_request_form_admin_form_submit($form, &$form_state) {
 
     } else {
 
-        variable_set('flat_access_request_form_title', $form_state['values']['title']);
+        variable_set('flat_access_request_form_id', $form_state['values']['webform']);
         variable_set('flat_access_request_form_exclusion_list', $form_state['values']['exclusion_list']);
 
         drupal_set_message(t('FLAT request access admin configuration was successfully saved'));

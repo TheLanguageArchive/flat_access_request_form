@@ -4,19 +4,9 @@
  *
  * @return array
  */
-function flat_access_request_form_entity() {
-
-    $query = new EntityFieldQuery();
-
-    return $query->entityCondition('entity_type', 'node')
-        ->propertyCondition('type', 'webform')
-        ->propertyCondition('title', variable_get('flat_access_request_form_title'))
-        ->propertyCondition('status', 1)
-        ->range(0, 1)
-        ->execute();
+function flat_access_request_form_get_form() {
+    return node_load(variable_get('flat_access_request_form_id'));
 }
-
-
 
 /**
  * Fetch whether user has no access
@@ -28,7 +18,7 @@ function flat_access_request_form_entity() {
 function flat_access_request_has_no_access($object = null) {
 
     if (null === $object) {
-        return false;
+        return true;
     }
 
     global $user;
@@ -45,4 +35,18 @@ function flat_access_request_has_no_access($object = null) {
     }
 
     return false === in_array($pid, $exclusion) && false === PermissionsAccess::hasAccess($user, $object, new IslandoraXacml($object));
+}
+
+/**
+ * Fetching all available webforms
+ *
+ * @return array
+ */
+function flat_access_request_form_get_webforms() {
+
+    $query = db_select('webform', 'w');
+    $query->join('node', 'n', 'w.nid = n.nid');
+    $query->fields('n', ['nid', 'title']);
+
+    return $query->execute()->fetchAllAssoc('nid');
 }

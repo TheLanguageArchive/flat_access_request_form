@@ -8,17 +8,12 @@ module_load_include('inc', 'flat_access_request_form', 'includes/db');
  */
 function flat_access_request_form_install() {
 
-    // setting default settings
-    variable_set('flat_access_request_form_title', t('Flat Access Request Form'));
-    variable_set('flat_access_request_form_email', 'admin@example.com');
-    variable_set('flat_access_request_form_exclusion_list', 'islandora:root');
-
     $node = new stdClass();
     $node->type = 'webform';
 
     node_object_prepare($node);
 
-    $node->title    = variable_get('flat_access_request_form_title');
+    $node->title    = 'Request Access';
     $node->language = 'en';
     $node->uid      = 1;
     $node->promote  = 0;
@@ -77,7 +72,7 @@ function flat_access_request_form_install() {
     $notification = [
 
         [
-            'email'               => variable_get('flat_access_request_form_email'),
+            'email'               => 'admin@example.com',
             'subject'             => 'Access request for [flat:label]',
             'from_name'           => 'default',
             'from_address'        => 'default',
@@ -113,6 +108,10 @@ function flat_access_request_form_install() {
 
     // save node
     node_save($node);
+
+    // setting default settings
+    variable_set('flat_access_request_form_id', $node->nid);
+    variable_set('flat_access_request_form_exclusion_list', 'islandora:root');
 }
 
 /**
@@ -122,13 +121,12 @@ function flat_access_request_form_install() {
  */
 function flat_access_request_form_uninstall() {
 
-    $entities = flat_access_request_form_entity();
+    $node = flat_access_request_form_get_form();
 
-    if ($entities) {
-
-        $entity = array_keys($entities['node']);
-        $nid    = array_shift($entity);
-
-        node_delete($nid);
+    if ($node) {
+        node_delete($node->nid);
     }
+
+    variable_del('flat_access_request_form_id');
+    variable_del('flat_access_request_form_exclusion_list');
 }
