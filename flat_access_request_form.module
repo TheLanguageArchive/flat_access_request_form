@@ -199,7 +199,7 @@ function flat_access_request_form_preprocess_page(&$variables) {
 
                 $request_access_path = url('islandora/object/' . arg(2) . '/request_access');
 
-                $variables['title_suffix']['#markup'] = '<div style="margin-bottom: 10px;"><a href="' . $request_access_path . '">Request access</a></div>' . $variables['title_suffix']['#markup'];
+                $variables['title_suffix']['#markup'] = '<div class="access-request-link"><a href="' . $request_access_path . '">Request access</a></div>' . $variables['title_suffix']['#markup'];
             }
         }
     }
