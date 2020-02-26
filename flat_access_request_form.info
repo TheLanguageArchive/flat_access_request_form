@@ -5,5 +5,4 @@ core = 7.x
 version = 7.x-0.1-dev
 configure = admin/config/flat_deposit/flat_access_request_form
 dependencies[] = flat_deposit
-dependencies[] = flat_permissions
 dependencies[] = webform

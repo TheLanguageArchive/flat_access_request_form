@@ -23,8 +23,6 @@ function flat_access_request_has_no_access($object = null) {
 
     global $user;
 
-    module_load_include('inc', 'flat_permissions', 'includes/PermissionsAccess');
-
     $pid       = trim(str_replace('info:fedora/', '', $object->id));
     $list      = variable_get('flat_access_request_form_exclusion_list');
     $list      = explode("\n", $list);
@@ -34,7 +32,7 @@ function flat_access_request_has_no_access($object = null) {
         $exclusion[] = trim(str_replace('info:fedora/', '', $item));
     }
 
-    return false === in_array($pid, $exclusion) && false === PermissionsAccess::hasAccess($user, $object, new IslandoraXacml($object));
+    return false === in_array($pid, $exclusion);
 }
 
 /**
