@@ -1,5 +1,6 @@
 <?php
 module_load_include('inc', 'flat_access_request_form', 'includes/db');
+module_load_include('inc', 'flat_access_request_form', 'includes/utilities');
 
 /**
  * Displaying flat request access form
@@ -7,7 +8,12 @@ module_load_include('inc', 'flat_access_request_form', 'includes/db');
  *
  * @return string
  */
-function flat_access_request_form() {
+function flat_access_request_form(AbstractObject $object) {
+
+    module_load_include('inc', 'islandora_solr', 'includes/breadcrumbs');
+
+    $breadcrumbs = islandora_solr_get_breadcrumbs_recursive($object->id);
+    drupal_set_breadcrumb($breadcrumbs);
 
     $node = flat_access_request_form_get_form();
 
@@ -66,7 +72,7 @@ function flat_access_request_form_menu() {
         'type'             => MENU_CALLBACK,
         'page callback'    => 'flat_access_request_form',
         'page arguments'   => [2],
-        'access callback'  => 'flat_access_request_form_menu_access',
+        'access callback'  => 'flat_access_request_form_access',
         'access arguments' => [2],
         'weight'           => 100,
     ];
@@ -84,19 +90,24 @@ function flat_access_request_form_menu() {
     return $items;
 }
 
+/**
+ * Check whether user has access to admin menu
+ *
+ * @return boolean
+ */
 function flat_access_request_form_admin_menu_access() {
     return true === user_access('request access menu');
 }
 
 /**
- * When to allow showing of tab
+ * Allow 'request access' form
  *
  * @param AbstractObject $object
  *
  * @return boolean
  */
-function flat_access_request_form_menu_access() {
-    return true;
+function flat_access_request_form_access(AbstractObject $object) {
+    return true === flat_access_request_form_is_form_available($object);
 }
 
 /**
@@ -185,20 +196,20 @@ function flat_access_request_form_preprocess_page(&$variables) {
 
     if (drupal_get_http_header('status') !== '403 Forbidden') {
 
-        // arg(3) === null means we are on the view page
+        // arg(3) === null means we are on the islandora object view page
         if (arg(0) === 'islandora' && arg(3) === null) {
 
             $object    = menu_get_object('islandora_object', 2);
-            $no_access = flat_access_request_has_no_access($object);
+            $show_link = flat_access_request_form_is_form_available($object);
 
-            if (true === $no_access) {
+            if (true === $show_link) {
 
                 if (!isset($variables['title_suffix']['#markup'])) {
                     $variables['title_suffix']['#markup'] = '';
                 }
 
+                // user has access to form, let's show link
                 $request_access_path = url('islandora/object/' . arg(2) . '/request_access');
-
                 $variables['title_suffix']['#markup'] = '<div class="access-request-link"><a href="' . $request_access_path . '">Request access</a></div>' . $variables['title_suffix']['#markup'];
             }
         }
