@@ -1,6 +1,8 @@
 <?php
 module_load_include('inc', 'flat_access_request_form', 'includes/db');
 module_load_include('inc', 'flat_access_request_form', 'includes/utilities');
+module_load_include('inc', 'flat_access_level_display', 'includes/AccessLevel');
+module_load_include('inc', 'flat_access_level_display', 'includes/AccessLevelFacet');
 
 /**
  * Displaying flat request access form
