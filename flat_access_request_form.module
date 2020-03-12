@@ -104,12 +104,10 @@ function flat_access_request_form_admin_menu_access() {
 /**
  * Allow 'request access' form
  *
- * @param AbstractObject $object
- *
  * @return boolean
  */
-function flat_access_request_form_access(AbstractObject $object) {
-    return true === flat_access_request_form_is_form_available($object);
+function flat_access_request_form_access() {
+    return true === flat_access_request_form_check_roles();
 }
 
 /**
